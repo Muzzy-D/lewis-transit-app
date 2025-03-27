@@ -1,6 +1,6 @@
 'use client';
 
-import TripPlanner from '../components/TripPlanner';
+import TripPlanner from './components/TripPlanner';
 
 export default function Home() {
   return <TripPlanner />;
