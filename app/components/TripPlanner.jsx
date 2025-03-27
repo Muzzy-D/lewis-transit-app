@@ -1,14 +1,6 @@
 // React-based Trip Planner Interface (UI Mockup for Lewis County, WA)
 
 import { useState } from 'react';
-import { Card, CardContent } from "../components/ui/card";
-import { Button } from "../components/ui/button";
-import { Input } from "../components/ui/input";
-import { Label } from "../components/ui/label";
-import { Calendar } from "../components/ui/calendar";
-import { Popover, PopoverContent, PopoverTrigger } from "../components/ui/popover";
-import { format } from "date-fns";
-import { Clock } from "lucide-react";
 
 export default function TripPlanner() {
   const [origin, setOrigin] = useState('');
@@ -51,27 +43,21 @@ export default function TripPlanner() {
   };
 
   const handleSubmit = () => {
-    console.log("Submitting trip request for Lewis County Transit", {
-      origin,
-      destination,
-      time: tripTime,
-      mode,
-    });
     fetchTransitRoute();
   };
 
   const renderRouteSteps = (route) => {
     const steps = route?.legs?.[0]?.steps || [];
     return (
-      <ul className="text-sm list-disc pl-5 space-y-1">
+      <ul>
         {steps.map((step, index) => (
           <li key={index}>
             <span dangerouslySetInnerHTML={{ __html: step.html_instructions }} />
             {step.transit_details && (
-              <div className="ml-2 text-xs text-muted-foreground">
-                Bus: {step.transit_details.line.short_name} — {step.transit_details.headsign}<br />
-                From: {step.transit_details.departure_stop.name} at {step.transit_details.departure_time.text}<br />
-                To: {step.transit_details.arrival_stop.name} at {step.transit_details.arrival_time.text}
+              <div>
+                <strong>Bus:</strong> {step.transit_details.line.short_name} — {step.transit_details.headsign}<br />
+                <strong>From:</strong> {step.transit_details.departure_stop.name} at {step.transit_details.departure_time.text}<br />
+                <strong>To:</strong> {step.transit_details.arrival_stop.name} at {step.transit_details.arrival_time.text}
               </div>
             )}
           </li>
@@ -81,73 +67,58 @@ export default function TripPlanner() {
   };
 
   return (
-    <div className="max-w-xl mx-auto p-4">
-      <Card className="shadow-xl">
-        <CardContent className="space-y-4">
-          <h1 className="text-xl font-bold">Lewis County Transit Trip Planner</h1>
-          <p className="text-sm text-muted-foreground">Plan your route using Lewis County public transportation.</p>
+    <div style={{ maxWidth: 600, margin: '0 auto', padding: 20 }}>
+      <h1>Lewis County Transit Trip Planner</h1>
 
-          <div>
-            <Label htmlFor="origin">From</Label>
-            <Input id="origin" value={origin} onChange={e => setOrigin(e.target.value)} placeholder="e.g., Chehalis Library, Centralia College" />
-          </div>
+      <label>
+        From:<br />
+        <input
+          type="text"
+          value={origin}
+          onChange={e => setOrigin(e.target.value)}
+          placeholder="e.g., Chehalis Library"
+          style={{ width: '100%', padding: '8px', marginBottom: '10px' }}
+        />
+      </label>
 
-          <div>
-            <Label htmlFor="destination">To</Label>
-            <Input id="destination" value={destination} onChange={e => setDestination(e.target.value)} placeholder="e.g., Twin Transit Center, Yard Birds Mall" />
-          </div>
+      <label>
+        To:<br />
+        <input
+          type="text"
+          value={destination}
+          onChange={e => setDestination(e.target.value)}
+          placeholder="e.g., Twin Transit Center"
+          style={{ width: '100%', padding: '8px', marginBottom: '10px' }}
+        />
+      </label>
 
-          <div className="flex items-center gap-4">
-            <div>
-              <Label htmlFor="date">Date</Label>
-              <Calendar selected={tripTime} onSelect={setTripTime} />
-            </div>
-            <div>
-              <Label htmlFor="time">Time</Label>
-              <Popover>
-                <PopoverTrigger asChild>
-                  <Button variant="outline" className="w-full justify-start text-left font-normal">
-                    <Clock className="mr-2 h-4 w-4" />
-                    {format(tripTime, "p")}
-                  </Button>
-                </PopoverTrigger>
-                <PopoverContent className="w-auto p-2">
-                  <input
-                    type="time"
-                    className="border rounded p-2"
-                    value={format(tripTime, 'HH:mm')}
-                    onChange={e => {
-                      const [hours, minutes] = e.target.value.split(":");
-                      const newDate = new Date(tripTime);
-                      newDate.setHours(Number(hours));
-                      newDate.setMinutes(Number(minutes));
-                      setTripTime(newDate);
-                    }}
-                  />
-                </PopoverContent>
-              </Popover>
-            </div>
-          </div>
+      <label>
+        Date & Time:<br />
+        <input
+          type="datetime-local"
+          value={tripTime.toISOString().slice(0, 16)}
+          onChange={e => setTripTime(new Date(e.target.value))}
+          style={{ padding: '8px', marginBottom: '10px' }}
+        />
+      </label>
 
-          <div className="flex items-center gap-4">
-            <label>
-              <input type="radio" name="mode" checked={mode === 'depart'} onChange={() => setMode('depart')} /> Leave At
-            </label>
-            <label>
-              <input type="radio" name="mode" checked={mode === 'arrive'} onChange={() => setMode('arrive')} /> Arrive By
-            </label>
-          </div>
+      <div style={{ marginBottom: '10px' }}>
+        <label>
+          <input type="radio" name="mode" checked={mode === 'depart'} onChange={() => setMode('depart')} /> Leave At
+        </label>{' '}
+        <label>
+          <input type="radio" name="mode" checked={mode === 'arrive'} onChange={() => setMode('arrive')} /> Arrive By
+        </label>
+      </div>
 
-          <Button onClick={handleSubmit}>Plan My Trip</Button>
+      <button onClick={handleSubmit} style={{ padding: '10px 20px' }}>Plan My Trip</button>
 
-          {result?.routes?.[0] && (
-            <div className="mt-6 space-y-2">
-              <h2 className="text-md font-semibold">Route Preview</h2>
-              {renderRouteSteps(result.routes[0])}
-            </div>
-          )}
-        </CardContent>
-      </Card>
+      {result?.routes?.[0] && (
+        <div style={{ marginTop: 20 }}>
+          <h2>Route Preview</h2>
+          {renderRouteSteps(result.routes[0])}
+        </div>
+      )}
     </div>
   );
 }
