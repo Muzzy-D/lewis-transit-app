@@ -1,4 +1,3 @@
-
 // React-based Trip Planner Interface (UI Mockup for Lewis County, WA)
 
 import { useState } from 'react';
@@ -10,9 +9,6 @@ import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { format } from "date-fns";
 import { Clock } from "lucide-react";
-
-// The API key is now securely handled in the server-side proxy route.
-const GOOGLE_API_KEY = ""; // Replace with your API key
 
 export default function TripPlanner() {
   const [origin, setOrigin] = useState('');
@@ -31,8 +27,7 @@ export default function TripPlanner() {
     const params = new URLSearchParams({
       origin,
       destination,
-      mode: "transit",
-    
+      mode: "transit"
     });
 
     const timeParam = Math.floor(tripTime.getTime() / 1000);
@@ -45,7 +40,7 @@ export default function TripPlanner() {
     const url = `${baseUrl}?${params.toString()}`;
 
     try {
-      const response = await fetch(`/api/proxy?target=${encodeURIComponent(url)}`, { method: 'GET' });
+      const response = await fetch(`/api/proxy?target=${encodeURIComponent(url)}`);
       const data = await response.json();
       console.log("Transit Route Response:", data);
       setResult(data);
