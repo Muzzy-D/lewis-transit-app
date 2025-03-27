@@ -32,7 +32,7 @@ export default function TripPlanner() {
       origin,
       destination,
       mode: "transit",
-      key: GOOGLE_API_KEY,
+    
     });
 
     const timeParam = Math.floor(tripTime.getTime() / 1000);
